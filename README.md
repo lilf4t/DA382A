@@ -1,2 +1,2 @@
-# DA382A
-Distributed Intelligent Systems
+# Distributed Intelligent Systems - DA382A
+
