@@ -1,0 +1,129 @@
+extensions [time]
+
+
+;=======================================================================================================================================
+;INITIALIZATION OF TIME.
+to initTime
+  set tick-datetime time:anchor-to-ticks (time:create "2024-04-23 10:00:0") 1 "minute"
+
+  set sim-start-time "2024/04/20 22:50:00"
+
+  set sim-start-logotime time:create-with-format sim-start-time "yyyy/M/d HH:mm:ss"  ; NEVER use "YYYY" instead of "yyyy"
+
+  set sim-time time:anchor-to-ticks sim-start-time 1 "minute"
+  ;set sim-time time:anchor-to-ticks sim-start-time 1 "day"
+
+  ;initialize time
+  set start-time time:copy sim-time
+  set time-simulated 0
+  
+end
+
+;=======================================================================================================================================
+;STARTS A TIMER FROM THE CURRENT SIMULATION TIME. THE TIMER IS CHOSEN BY INPUTTING THE HOUR, MINUTE.
+to-report timeTaker [hour minute]
+
+  let temp-time time:plus sim-time hour "hour"
+  set temp-time time:plus temp-time minute "minute"
+
+  report temp-time
+
+end
+;=======================================================================================================================================
+;CHECKS WETHER A TIMETAKER HAS BEEN FINISHED
+to-report timeTakerDone
+  ifelse timeTaker-stop-time != nobody
+  [
+    ifelse time:is-equal? sim-time timeTaker-stop-time
+    [
+      set timeTaker-stop-time nobody
+      report true
+    ]
+    [report false]
+  ]
+  [report false]
+end
+; alternative that works for individual agents
+;CHECKS WETHER A TIMETAKER HAS BEEN FINISHED, requires local variable agTimer
+to-report localtimeTakerDone [agTimer]
+  ifelse agTimer != nobody
+  [
+    ifelse time:is-equal? sim-time agTimer
+    [
+      set agTimer nobody
+      report true
+    ]
+    [report false]
+  ]
+  [report false]
+end
+
+;=======================================================================================================================================
+;RETURNS A BOOLEAN, TRUE OR FALSE, IF THE CURRENT SIMULATION TIME IS BETWEEN THE INPUTS min_hour AND max_hour. INPUT CAN ONLY BE HOURS AND NOT MINUTES!
+to-report betweenHours [min_hour max_hour]
+
+  ifelse (time:get "hour" sim-time = min_hour and time:get "minute" sim-time >= 0) or (time:get "hour" sim-time = max_hour and time:get "minute" sim-time = 0)
+    [report true]
+    [report false]
+end
+;=======================================================================================================================================
+;WRAPS THE TIME AROUND FROM 23 TO 06. DOES SO BY MANIPULATING THE TICK VALUE TO MATCH THAT OF THE SURPASSED NIGHT.
+to timeWrapAround
+
+  if time:get "hour" sim-time = 23
+  [
+
+    repeat 420
+    [tick]
+    set time-simulated (word (time:difference-between sim-start-time sim-time "minute") " minutes")
+  ]
+end
+;=======================================================================================================================================
+;REPORTS THE CURRENT SIMULATION TIME IN YYYY-MM-D h:mm
+to-report show-time
+  report  time:show sim-time "yyyy-MM-d H:mm"
+end
+;=======================================================================================================================================
+; TIME FUNCTIONS
+to update-time-flags
+  ; The time is measured in ticks where one tick is an hour.
+  ; The time is tracked in the time variable and this variable is
+  ; reset every week (or every 168 hours).
+  ; Set the time
+  set time (time + 1)
+  set time time mod 168
+  
+  ; Determine if it is morning, evening or weekend
+  let hour-of-day time mod 24
+
+  ifelse (6 <= hour-of-day and hour-of-day <= 10)[
+    set flagMorning true
+  ] [
+  set flagMorning false
+  ]
+
+  ; Check if it is evening
+  ifelse (16 <= hour-of-day and hour-of-day <= 22)[
+    set flagEvening true
+
+  ] [
+    set flagEvening false
+  ]
+
+  ; Check if it is weekend
+  ifelse (time >= 120) [
+    set flagWeekend true
+  ] [
+    set flagWeekend false
+  ]
+  if isWeekend
+  [print "weeknd"]
+
+  ;if Debug [print word "Time: " time]
+end
+
+to-report isWeekend
+  ifelse time:get "weekday" sim-time = 6 or time:get "weekday" sim-time = 7
+  [report true]
+  [report false]
+end

@@ -1,0 +1,89 @@
+extensions [time]
+
+globals
+[
+  tick-datetime
+  sim-time               ; The current simulation time
+  sim-start-time
+  start-time
+  time-simulated   ; Text string showing how much time has been simulated, with the units specified on the Interface
+  sim-start-logotime
+
+  timeTaker-stop-time
+ 
+]
+
+
+;=======================================================================================================================================
+;INITIALIZATION OF TIME.
+to initTime
+  set tick-datetime time:anchor-to-ticks (time:create "2024-04-23 10:00:0") 1 "minute"
+
+  set sim-start-time "2024/04/20 22:50:00"
+
+  set sim-start-logotime time:create-with-format sim-start-time "yyyy/M/d HH:mm:ss"  ; NEVER use "YYYY" instead of "yyyy"
+
+  set sim-time time:anchor-to-ticks sim-start-time 1 "minute"
+  ;set sim-time time:anchor-to-ticks sim-start-time 1 "day"
+
+  ;initialize time
+  set start-time time:copy sim-time
+  set time-simulated 0
+end
+
+;=======================================================================================================================================
+;STARTS A TIMER FROM THE CURRENT SIMULATION TIME. THE TIMER IS CHOSEN BY INPUTTING THE HOUR, MINUTE.
+to-report timeTaker [hour minute]
+
+  let temp-time time:plus sim-time hour "hour"
+  set temp-time time:plus temp-time minute "minute"
+
+  report temp-time
+
+end
+;=======================================================================================================================================
+;CHECKS WETHER A TIMETAKER HAS BEEN FINISHED
+to-report timeTakerDone
+  ifelse timeTaker-stop-time != nobody
+  [
+    ifelse time:is-equal? sim-time timeTaker-stop-time
+    [
+      set timeTaker-stop-time nobody
+      report true
+    ]
+    [report false]
+  ]
+  [report false]
+end
+
+;=======================================================================================================================================
+;RETURNS A BOOLEAN, TRUE OR FALSE, IF THE CURRENT SIMULATION TIME IS BETWEEN THE INPUTS min_hour AND max_hour. INPUT CAN ONLY BE HOURS AND NOT MINUTES!
+to-report betweenHours [min_hour max_hour]
+
+  ifelse (time:get "hour" sim-time = min_hour and time:get "minute" sim-time >= 0) or (time:get "hour" sim-time = max_hour and time:get "minute" sim-time = 0)
+    [report true]
+    [report false]
+end
+;=======================================================================================================================================
+;WRAPS THE TIME AROUND FROM 23 TO 06. DOES SO BY MANIPULATING THE TICK VALUE TO MATCH THAT OF THE SURPASSED NIGHT.
+to timeWrapAround
+
+  if time:get "hour" sim-time = 23
+  [
+
+    repeat 420
+    [tick]
+    set time-simulated (word (time:difference-between sim-start-time sim-time "minute") " minutes")
+  ]
+end
+;=======================================================================================================================================
+;REPORTS THE CURRENT SIMULATION TIME IN YYYY-MM-D h:mm
+to-report show-time
+  report  time:show sim-time "yyyy-MM-d H:mm"
+end
+;=======================================================================================================================================
+to-report isWeekend
+  ifelse time:get "weekday" sim-time = 6 or time:get "weekday" sim-time = 7
+  [report true]
+  [report false]
+end

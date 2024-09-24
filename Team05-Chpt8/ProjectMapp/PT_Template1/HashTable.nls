@@ -1,0 +1,79 @@
+extensions[table]
+
+;======================================================================
+;THERE MUST BE A GLOBAL VARIABLE: hashTable
+;CITIZENS MIGHT NEED TO OWN VARIABLES FOR EACH KEY: fear, anger, frustration???
+;======================================================================
+
+;======================================================================
+;ADDS A VALUE TO THE HASHTABLE
+;THE PARAMETS MUST BE ENTERED IN A STRING FORMAT
+;HOW TO: addToHashTable (word who) "anger" (word anger)
+;        addToHashTable (word who) "anger" 5
+to addToHashTable [whos key value]
+
+  ifelse table:has-key? hashTable key
+  [
+    let innerTable table:get hashTable key
+    table:put innerTable whos value
+    table:put hashTable key innerTable
+  ]
+  [print "Table doesn't contain key"]
+  
+end
+
+
+;======================================================================
+;REPORT FUNCTION THAT RETURNS THE AVERAGE OF THE VALUES ASSOCIATED TO THE PARAMETER 'key'
+;HOW TO: let anger_average getAverage "anger"
+to-report getAverage [key]
+
+  let innerTable table:get hashTable key
+  let values table:values innerTable
+  
+  let i 0
+  let summa 0
+  let len length values
+  while [i < len ]
+  [
+    set summa (summa + read-from-string(item i values))
+
+    set i (i + 1)
+  ]
+  let average summa / len
+  
+  report average
+  
+end
+;======================================================================
+;REPORTS THE TOTAL VALUE OF ALL VALUES UNDER A SPECIFIC KEY
+;HOW TO: let totalFear getTotal "fear"
+to-report getTotal[key]
+
+  let innerTable table:get hashTable key
+  let values table:values innerTable
+
+  let i 0
+  let summa 0
+  let len length values
+  while [i < len ]
+  [
+    set summa (summa + read-from-string(item i values))
+
+    set i (i + 1)
+  ]
+  report summa
+
+end
+
+;======================================================================
+;PRINTS OUT THE CURRENT HASHTABLE
+to printHash
+
+  print (word "ANGER: " table:get hashTable "anger")
+  print (word "FEAR: " table:get hashTable "fear")
+  print (word "FRUSTRATION: " table:get hashTable "frustration")
+  print (word "WILLTODEMONSTATE: " table:get hashTable "willToDemonstrate")
+  
+end
+;======================================================================

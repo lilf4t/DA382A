@@ -1,0 +1,95 @@
+; File with the "to-go"- functionality of citizen-agents
+
+; FILE HISTORY:
+
+; 2024-01-29 Initial template, gks
+;
+; 2024-41-16 implemented the assignment, fatima kadum
+;---------------------------------------------------
+
+to state_machine
+  ; priority 1
+  if state = "imprisoned" [
+    imprisoned
+  ] 
+    ; priority 2
+    if state = "escape_from_cops" [
+      escape_from_cops
+    ] 
+      ; priority 3
+      if state = "walk_to_destination" [
+        walk_to_destination
+      ]
+ 
+end
+
+to imprisoned
+  if inPrison? = true [
+    set jailtime jailtime + 1 ; Counting the time in prison
+    print (word "citizen " who " is in prison since: " jailtime)
+    set energy energy - 1
+    if jailtime > jailsentence [ ; Released from prison
+      set jailtime 0
+      set inPrison? false ; Release citizen from prison
+      set color yellow
+      print (word "citizen " who " is released from prison")
+      set state "escape_from_cops"
+    ]
+  ]
+end
+
+to escape_from_cops
+  ; Move forward where there are no cops and is not prison
+  let places neighborhood with [not any? cops-here and region != "prison"]
+  if any? places [
+    move-to one-of places
+    set inPrison? false
+    set color yellow
+    print (word "citizen " who "is released from prison")
+  ]
+  ; Check if cops are within vision radius
+  let nearby-police other cops in-radius citizen-vision
+  if any? nearby-police [
+    let police min-one-of nearby-police [distance myself] ; Identify the nearest cop
+    if police != nobody [
+      print (word " citizen: " who " sees cop: " police)
+      set heading (towards police) + 180 ; Face opposite from the nearest police
+      set state "walk_to_destination"
+    ] 
+  ]
+end
+
+to walk_to_destination
+  if energy < 40 [
+    set state "go_to_espresso"
+    go_to_espresso
+  ] 
+  if energy > -20 [
+    set state "go_to_university"
+    go_to_university
+  ]
+end
+
+to gotoprison 
+  set inPrison? true
+  set color red
+  move-to one-of patches with [not any? turtles-here and region = "prison"]
+  set state "imprisoned"
+end
+
+
+to go_to_espresso
+  set inEspresso? true
+  set color pink
+  move-to one-of patches with [not any? turtles-here and region = "espresso"]
+  set energy energy + 100
+  set state "escape_from_cops"
+end
+
+to go_to_university
+  set inUniversity? true
+  set color white
+  move-to one-of patches with [not any? turtles-here and region = "university"]
+  set energy energy - 20
+  set state "escape_from_cops"
+end
