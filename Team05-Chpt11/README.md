@@ -1,46 +1,12 @@
-# DA382A Projektarbete i NetLogo
+# NetLogo
  
-Hej allihopa!
+Programming Tasks for Chapter 11
+ 
 
-Lite grejer för att detta ska fungera hyfsat smärtfritt.
+In order for the agents to be able to decide on their preferences between different objectives (= proactive goals), we need to implement the different utility functions. We do this by trying to add the functions and variables from the ODD description to the existing code from PT_Template1.
 
-Det viktigaste är kommunikation, förstår man inte, är man osäker på något, så säger man till. Tills dess att man får ett klart besked.
-### Viktiga tre regler
-- Vi rör inte main-branchen!
-- Vi rör absolut inte main-branchen när vi programmerar funktioner.
-- Vi rör inte main-branchen enskilt, utan tillsammans när vi fått en viss del att fungera.
-
-Min (Davids) tanke är att vi skapar egna brancher (per grupp) för att utveckla vår tilldelade funktionalitet, och endast gör en merge med main när det fungerar fläckfritt.
-När man känner att den specifika funktionen/uppgiften är klar så hämtar jämför man med senaste main versionen och bugfixar om det behövs. Man kan sedan be Gion att slå ihop brancherna.
+As long as each group only uses the variable names and the utility functions described in the ODD description, it should be possible to merge the different parts into a common version at the end. However, that usually does not work and a better way is for the different groups to talk to each other and to agree on the common list of variables and functions and to coordinate their code. Part of the tasks in the list below is to coordinate the initialization of variables and the implementation of the deliberation functionality.
 
 
-Man kan också tänka sig att en fork från en grupps branch kan vara lämplig för att smidigare jobba som innan med enskilda gruppen. (Detta blir det inte, det blir troligtvis parprogrammering eller sub-branches.
-
-```
-exempel-struktur
-
-main-branch
-        |_ taskXX_branch
-        |               |_ gruppmedlem1-branch
-        |               |_ gruppmedlem2-branch
-        |_ taskXY-branch
-                        |_ gruppmedlem1-branch
-```
-
-
-## En förklaring av branches på mitt förslag
-1. Main Branch: Stable, integrering hit sker endast när något fungerar fullständigt och förslagsvis i någon slags ordning där till exempel tidshantering är viktigt att få på plats innan vi går ut och äter på restaurang på kvällen.
-2. Task Branch: För varje uppgift vi får bör en branch skapas ämnad för just den funktionen.
-Example: *task-11A(-environment-setup)*, *task-XXb(-agent-communication)*
-3. Indivduella Branches: Varje gruppmedlem har sedan en egen branch för sin bekärda del av kodningen (alternativt (lättare) parprogrammering).
-Example: *john-environment-trees*, *lisa-environment-water*
-
-4. Backup Branch: DENNA RÖR VI EJ!
-
-
-Vi jobbar sedan uppåt igen. En enskild task färdig -> hämta main. När allt är fungerande i task-branch med den hämtade main -> merge till main.
-
-
-Finns för frågor och tack på förhand innan röran börjar, 
-David P.
-
+Task 11.D
+Update of the utilities for the different needs of the 'free speech goals'. Test these utilities by programming the deliberation for the goal 'Political' (e.g. holding a speech on Town Square). See the description in section 4.4, 5.3 of the ODD Project description.
