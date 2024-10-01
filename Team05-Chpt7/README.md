@@ -1,4 +1,4 @@
-# Ntelogo
+# Netlogo
  
 Programming Tasks for Chapter 7
 The tasks below integrate a message handling functionality with the hybrid-architecture that we developed so far.
